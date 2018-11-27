@@ -1,0 +1,15 @@
+{
+  "name": "niparent",
+  "version": "1.0.0",
+  "description": "a chatbot with dialogflow",
+  "main": "app.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "author": "ajwl",
+  "license": "ISC",
+  "dependencies": {
+    "dialogflow": "^0.7.0",
+    "express": "^4.16.4"
+  }
+}
