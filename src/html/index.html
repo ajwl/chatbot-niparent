@@ -1,0 +1,34 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title> NI parent bot</title>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    </head>
+    <body>
+        <div> 
+            <h1> My bot </h1>
+            <p> please work </p>
+            <form onsubmit="sendMsg(this);return false">
+                <input type="text" name="chatter"/>
+                <input type="submit"/>
+            </form>
+        </div>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            const socket = io.connect();
+            socket.on('news', function (data) {
+                console.log(data);
+                socket.emit('my other event', { my: 'data' });
+            });
+
+            const chatBox = document.querySelector('form');
+            const sendMsg = (form) => {
+                const msgBox = form.querySelector('input[name=chatter');
+                socket.emit('chat message', msgBox.value)
+                msgBox.value = '';
+            }
+
+        </script>
+    </body>
+</html>
