@@ -4,30 +4,49 @@
         <title> NI parent bot</title>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <style>
+            p.niparent {
+                background-color:rgb(169, 238, 238);
+            }
+        </style>
     </head>
     <body>
         <div> 
             <h1> My bot </h1>
-            <p> please work </p>
-            <form onsubmit="sendMsg(this);return false">
-                <input type="text" name="chatter"/>
-                <input type="submit"/>
+            <div class="chat-box"></div>
+
+            <form onsubmit="return false">
+                <input type="text" name="chatter" />
+                <input type="submit" value="send"/>
             </form>
         </div>
         <script src="/socket.io/socket.io.js"></script>
         <script>
             const socket = io.connect();
-            socket.on('news', function (data) {
-                console.log(data);
-                socket.emit('my other event', { my: 'data' });
-            });
+            const formT = document.querySelector('form')
+            const chatB = document.querySelector('.chat-box')
 
-            const chatBox = document.querySelector('form');
-            const sendMsg = (form) => {
-                const msgBox = form.querySelector('input[name=chatter');
+            socket.on('chat message', (msg) => appendMsg(msg, 'niparent'))
+            
+            const sendMsg = () => {
+                const msgBox = formT.querySelector('input[name=chatter');
                 socket.emit('chat message', msgBox.value)
+                appendMsg(msgBox.value, 'user')
                 msgBox.value = '';
             }
+
+            const appendMsg = (msg, speaker) => {
+                const prevMsg = document.createElement("p")
+                prevMsg.textContent = msg;
+                prevMsg.classList.add(speaker)
+                chatB.appendChild(prevMsg)
+            }
+
+            formT.addEventListener(
+                'submit',
+                sendMsg,
+                false
+            )
 
         </script>
     </body>

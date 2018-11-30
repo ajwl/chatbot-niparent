@@ -1,7 +1,6 @@
 'use strict'
-
 const dotenv = require('dotenv')
-const {DialogFlow} = require('dialogflow')
+const dialogflow = require('dialogflow')
 dotenv.config()
 const projectId = 'northernirishparent'
 const languageCode = 'en-US' 
@@ -14,7 +13,19 @@ const sessionId = 'quickstart-session-id'
 //WEBPACK NIGHTMARES
 //https://medium.com/@binyamin/creating-a-node-express-webpack-app-with-dev-and-prod-builds-a4962ce51334
 
-export const initSession = () => {
+const formatQuery = (query, sessionPath) => {
+    return {
+        session: sessionPath,
+        queryInput: {
+            text: {
+                text: query,
+                languageCode: languageCode,
+            }
+        }
+    }
+
+}
+const initSession = () => {
     const getCredentials = () => {
         let privateKey = process.env.DIALOGFLOW_PRIVATE_KEY
         let clientEmail = process.env.DIALOGFLOW_CLIENT_EMAIL
@@ -27,45 +38,39 @@ export const initSession = () => {
     }
     // Instantiate a DialogFlow client.
     const config = getCredentials();
-    const sessionClient = new DialogFlow.SessionsClient(config);
+    const sessionClient = new dialogflow.SessionsClient(config);
     const sessionPath = sessionClient.sessionPath(projectId, sessionId);
 
     return {sessionClient, sessionPath};
 }
 
-const formatQuery = (query, sessionPath) => {
-    return {
-        session: sessionPath,
-        queryInput: {
-            text: {
-                text: query,
-                languageCode: languageCode,
-            }
-        }
-    }
-}
 
-export const askAgent = (query, sessionClient, sessionPath) => {
+const askAgent = (query, sessionClient, sessionPath) => {
     const request = formatQuery(query, sessionPath);
     // Send request and log result
-    sessionClient
+    return sessionClient
         .detectIntent(request)
         .then(responses => {
             console.log('Detected intent');
             const result = responses[0].queryResult;
             console.log(`  Query: ${result.queryText}`);
             console.log(`  Response: ${result.fulfillmentText}`);
+
             if (result.intent) {
                 console.log(`  Intent: ${result.intent.displayName}`);
             } else {
                 console.log(`  No intent matched.`);
             }
-            return `<p>${result.fulfillmentText}</p>`;
+            return result.fulfillmentText;
         })
         .catch(err => {
             console.error('ERROR:', err);
+            return err;
         });
+}
 
-    return "hello end text";
+module.exports = {
+    askAgent,
+    initSession
 }
 
